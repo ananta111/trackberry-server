@@ -1,4 +1,6 @@
-import serial, time
+import serial, time, datetime
+
+from models.markers import Feature
 
 
 class SensorTask:
@@ -9,13 +11,20 @@ class SensorTask:
         self._running = False
 
     def run(self):
-        i = 0
+        lat, lng = 36.13418509051332, -80.26259050468371
         while self._running:
-            # ser = serial.Serial('/dev/ttyACM0')
-            # ser_bytes = ser.readline()
-            print ("Hello " + str(i))
-            time.sleep(0.5)
-            i += 1
+            data = {"type": "Feature",
+             "geometry": {"type": "Point", "coordinates": [lat, lng]},
+             "properties": {}
+            }
+            marker = Feature(**data)
+            marker.properties.time = str(datetime.datetime.utcnow())
+            marker.save()
+            id = marker.id
+            time.sleep(2)
+            lat -= 0.5
+            lng += 0.7
+            print("saved ")
         print("GPS Sensing Stopped")
 
 

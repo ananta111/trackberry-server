@@ -1,22 +1,24 @@
 import urllib.parse
 import certifi
 from device_control.device_control import *
-from threading import Thread
 from database.db import initialize_db
 from flask import Flask, request, Response
 from datetime import datetime
 from models.markers import Feature
-import os
+from dotenv import dotenv_values
+import json
 
 app = Flask(__name__)
 
 task = SensorTask()
 
-# task
+# sensor task
 task = SensorTask()
 
-username = urllib.parse.quote(os.environ.get("MONGO_USERNAME"))
-pwd = urllib.parse.quote(os.environ.get("MONGO_PASSWORD"))
+config = dotenv_values(".env")
+
+username = urllib.parse.quote(config["MONGO_USERNAME"])
+pwd = urllib.parse.quote(config["MONGO_PASSWORD"])
 
 url = "mongodb+srv://" + username + ":" + pwd + "@cluster0.bxjmr.mongodb.net/track-berry?retryWrites=true&w=majority"
 
@@ -56,16 +58,26 @@ def get_markers():
     return enable_cors(Response(markers, mimetype="application/json", status=200))
 
 
-@app.route('/gps/<state>')
-def device_control(state):
-    if state == "on":
-        t = Thread(target=task.run)
-        t.start()
-        print ("thread started")
-        return enable_cors(Response("Sensing Started", status=200))
-    if state == "off":
-        task.terminate()
-        return enable_cors(Response("Sensing Stopped", status=200))
+@app.route("/markers", methods=["DELETE"])
+def delete_all_markers():
+    Feature.objects({}).delete()
+    message = {"message": "Deleted"}
+    message = json.dumps(message)
+    return enable_cors(Response(message, mimetype="application/json", status=202))
+
+
+
+# @app.route('/gps/<state>')
+# def device_control(state):
+#     if state == "on":
+#         t = Thread(target=task.run)
+#         t.setDaemon(True)
+#         t.start()
+#         print ("thread started")
+#         return enable_cors(Response("Sensing Started", status=200))
+#     if state == "off":
+#         task.terminate()
+#         return enable_cors(Response("Sensing Stopped", status=200))
 
 
 if __name__ == '__main__':

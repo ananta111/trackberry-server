@@ -1,3 +1,4 @@
+dotenv
 certifi
 fastapi
 pydantic
