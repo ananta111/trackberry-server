@@ -58,6 +58,7 @@ def get_markers():
     return enable_cors(Response(markers, mimetype="application/json", status=200))
 
 
+
 @app.route("/markers", methods=["DELETE"])
 def delete_all_markers():
     Feature.objects({}).delete()
