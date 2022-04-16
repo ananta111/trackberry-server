@@ -4,6 +4,7 @@ fastapi
 pydantic
 mongoengine
 flask
+gunicorn
 # altgraph==0.10.2
 # asn1crypto==0.24.0
 backports-abc==0.5
