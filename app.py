@@ -7,6 +7,7 @@ from datetime import datetime
 from models.markers import Feature
 from dotenv import dotenv_values
 import json
+import os
 
 app = Flask(__name__)
 
@@ -17,8 +18,10 @@ task = SensorTask()
 
 config = dotenv_values(".env")
 
-username = urllib.parse.quote(config["MONGO_USERNAME"])
-pwd = urllib.parse.quote(config["MONGO_PASSWORD"])
+# username = urllib.parse.quote(config["MONGO_USERNAME"])
+username = urllib.parse.quote(os.environ.get("MONGO_USERNAME"))
+# pwd = urllib.parse.quote(config["MONGO_PASSWORD"])
+pwd = urllib.parse.quote(os.environ.get("MONGO_PASSWORD"))
 
 url = "mongodb+srv://" + username + ":" + pwd + "@cluster0.bxjmr.mongodb.net/track-berry?retryWrites=true&w=majority"
 
