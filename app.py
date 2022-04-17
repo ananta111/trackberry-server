@@ -47,7 +47,11 @@ def hello_world():
 @app.route("/markers", methods=["POST"])
 def new_marker():
     body = request.get_json()
-    print(body)
+    log_file = open("logs.txt", "a+")
+    log = "Time {}  Request Type: POST Request Body: {}\n".format(datetime.now(), body)
+    print (log)
+    log_file.write(log)
+    log_file.close()
     marker = Feature(**body)
     marker.properties.time = str(datetime.utcnow())
     marker.save()
@@ -57,6 +61,11 @@ def new_marker():
 
 @app.route('/markers',  methods=["GET"])
 def get_markers():
+    log = "Time {}  Request Type: GET \n".format(datetime.now())
+    log_file = open("logs.txt", "a+")
+    print(log)
+    log_file.write(log)
+    log_file.close()
     markers = Feature.objects().to_json()
     return enable_cors(Response(markers, mimetype="application/json", status=200))
 
