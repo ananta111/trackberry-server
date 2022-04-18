@@ -7,6 +7,7 @@ from datetime import datetime
 from models.markers import Feature
 from dotenv import dotenv_values
 import json
+import os
 
 app = Flask(__name__)
 
@@ -17,8 +18,10 @@ task = SensorTask()
 
 config = dotenv_values(".env")
 
-username = urllib.parse.quote(config["MONGO_USERNAME"])
-pwd = urllib.parse.quote(config["MONGO_PASSWORD"])
+# username = urllib.parse.quote(config["MONGO_USERNAME"])
+username = urllib.parse.quote(os.environ.get("MONGO_USERNAME"))
+# pwd = urllib.parse.quote(config["MONGO_PASSWORD"])
+pwd = urllib.parse.quote(os.environ.get("MONGO_PASSWORD"))
 
 url = "mongodb+srv://" + username + ":" + pwd + "@cluster0.bxjmr.mongodb.net/track-berry?retryWrites=true&w=majority"
 
@@ -44,7 +47,11 @@ def hello_world():
 @app.route("/markers", methods=["POST"])
 def new_marker():
     body = request.get_json()
-    print(body)
+    log_file = open("logs.txt", "a+")
+    log = "Time {}  Request Type: POST Request Body: {}\n".format(datetime.now(), body)
+    print (log)
+    log_file.write(log)
+    log_file.close()
     marker = Feature(**body)
     marker.properties.time = str(datetime.utcnow())
     marker.save()
@@ -54,8 +61,14 @@ def new_marker():
 
 @app.route('/markers',  methods=["GET"])
 def get_markers():
+    log = "Time {}  Request Type: GET \n".format(datetime.now())
+    log_file = open("logs.txt", "a+")
+    print(log)
+    log_file.write(log)
+    log_file.close()
     markers = Feature.objects().to_json()
     return enable_cors(Response(markers, mimetype="application/json", status=200))
+
 
 
 @app.route("/markers", methods=["DELETE"])
